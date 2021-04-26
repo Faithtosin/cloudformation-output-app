@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  cloudformation-output-app
+
+  Sample SAM Template for cloudformation-output-app
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  CloudformationOutputFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: cloudformation_output/
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Policies: [AWSCloudFormationReadOnlyAccess]
+      Events:
+        CloudformationOutput:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /output
+            Method: get
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  CloudformationOutputFunctionApi:
+    Description: "API Gateway endpoint URL for Prod stage for Cloudformation Output Function "
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/output/"
+  CloudformationOutputFunction:
+    Description: "Cloudformation Output  Lambda Function ARN"
+    Value: !GetAtt CloudformationOutputFunction.Arn
+  CloudformationOutputFunctionIamRole:
+    Description: "Implicit IAM Role created for Cloudformation Output function"
+    Value: !GetAtt CloudformationOutputFunctionRole.Arn
+  MediaLiveChannelId:
+    Description: "test MediaLiveChannelId"
+    Value: "33h3ij3"
+  MediaLivePrimaryEndpoint:
+    Description: "test MediaLivePrimaryEndpoint"
+    Value: "rtp://56.666.677.76"
+  MediaLiveSecondaryEndpoint:
+    Description: "test MediaLiveSecondaryEndpoint"
+    Value: "rtp://106.566.677.76"
