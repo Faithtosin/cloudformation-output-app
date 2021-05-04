@@ -38,12 +38,3 @@ Outputs:
   CloudformationOutputFunctionIamRole:
     Description: "Implicit IAM Role created for Cloudformation Output function"
     Value: !GetAtt CloudformationOutputFunctionRole.Arn
-  MediaLiveChannelId:
-    Description: "test MediaLiveChannelId"
-    Value: "33h3ij3"
-  MediaLivePrimaryEndpoint:
-    Description: "test MediaLivePrimaryEndpoint"
-    Value: "rtp://56.666.677.76"
-  MediaLiveSecondaryEndpoint:
-    Description: "test MediaLiveSecondaryEndpoint"
-    Value: "rtp://106.566.677.76"
