@@ -1,10 +1,7 @@
 import json
 import boto3
-# import requests
-
-import json
 import base64
-import boto3
+
 
 
 cloudformation = boto3.client('cloudformation')
@@ -29,10 +26,12 @@ def lambda_handler(event, context):
         if "Outputs" in response_describe["Stacks"][0]:
             outputs = response_describe["Stacks"][0]["Outputs"]
             
-            InputEndpoints = []
+            
             ChannelID=""
             CloudFrontHlsEndpoint=""
             MediaPackageHlsEndpoint=""
+            MediaLivePrimaryEndpoint=""
+            MediaLiveSecondaryEndpoint=""
             for output in outputs:
                 if output["OutputKey"] == "MediaLiveChannelId":
                     ChannelID= output["OutputValue"]
@@ -42,15 +41,14 @@ def lambda_handler(event, context):
                     MediaPackageHlsEndpoint = output["OutputValue"]
                 elif output["OutputKey"] == "MediaLivePrimaryEndpoint":
                     MediaLivePrimaryEndpoint = output["OutputValue"]
-                    InputEndpoints.append(MediaLivePrimaryEndpoint)
                 elif output["OutputKey"] == "MediaLiveSecondaryEndpoint":
                     MediaLiveSecondaryEndpoint = output["OutputValue"]
-                    InputEndpoints.append(MediaLiveSecondaryEndpoint)
                 
-            if  InputEndpoints and ChannelID != "" :
+            if  MediaLivePrimaryEndpoint and ChannelID and MediaLiveSecondaryEndpoint and CloudFrontHlsEndpoint  != "" :
                 yaml_file = { "StackName" : stack_name, 
                 "ChannelID":ChannelID, 
-                "InputEndpoints": InputEndpoints,  
+                "MediaLivePrimaryEndpoint": MediaLivePrimaryEndpoint,
+                "MediaLiveSecondaryEndpoint" : MediaLiveSecondaryEndpoint,
                 "CloudFrontHlsEndpoint": CloudFrontHlsEndpoint, 
                 "MediaPackageHlsEndpoint": MediaPackageHlsEndpoint,
                 }
