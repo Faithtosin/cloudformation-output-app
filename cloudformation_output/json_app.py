@@ -15,10 +15,7 @@ def lambda_handler(event, context):
     response_list_stack = cloudformation.list_stacks(StackStatusFilter=['CREATE_COMPLETE','UPDATE_COMPLETE'])
     output_stack = response_list_stack["StackSummaries"]
     
-    stacks_output_list = []
-    
-    
-    decklink_device=1
+    stacks_output_list = [] 
     #Loop through each stack
     for i in output_stack:
         stack_name = i["StackName"]
@@ -49,29 +46,22 @@ def lambda_handler(event, context):
                     MediaLiveSecondaryEndpoint = output["OutputValue"]
                 
             if  MediaLivePrimaryEndpoint and ChannelID and MediaLiveSecondaryEndpoint and CloudFrontHlsEndpoint  != "" :
-                slug="Channel"+str(decklink_device)
-                label= "Klic Channel "+str(decklink_device)
-                device= "Klic "+str(decklink_device)
-                yaml_list ={'Slug':slug, 
-                'Label':label,
-                'MediaLive':{'ChannelID': ChannelID,'InputEndpoints':[MediaLivePrimaryEndpoint,MediaLiveSecondaryEndpoint]},
-                'MediaPackage':{'PlaylistUrl':MediaPackageHlsEndpoint},
-                'DeckLinkDevice': device,
-                'DeckLinkInput': 'sdi'
+                yaml_file = { "StackName" : stack_name, 
+                "ChannelID":ChannelID, 
+                "MediaLivePrimaryEndpoint": MediaLivePrimaryEndpoint,
+                "MediaLiveSecondaryEndpoint" : MediaLiveSecondaryEndpoint,
+                "CloudFrontHlsEndpoint": CloudFrontHlsEndpoint, 
+                "MediaPackageHlsEndpoint": MediaPackageHlsEndpoint,
                 }
-    
                 
-                stacks_output_list.append(yaml_list)
-                #stacks_output_list.insert(0,yaml_list)
-                
-                final_file={'Streams':stacks_output_list}
-                #print(yaml.dump(final_file))    
-                
-                decklink_device += 1
+                #stacks_output_list.append(yaml_file)
+                stacks_output_list.insert(0,yaml_file)
+                print(yaml_file)    
+                    
                
     
     return {
         "statusCode": 200,
-        "body": yaml.dump(final_file),
+        "body": json.dumps(stacks_output_list),
         #"body": json.dumps(yaml_file),
     }
